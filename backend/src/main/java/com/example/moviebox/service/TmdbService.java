@@ -2,14 +2,12 @@ package com.example.moviebox.service;
 
 import com.example.moviebox.dto.MovieDto;
 import com.example.moviebox.dto.MovieResponseDto;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
-@RequiredArgsConstructor
 public class TmdbService {
 
     private final RestTemplate restTemplate;
@@ -19,6 +17,10 @@ public class TmdbService {
 
     @Value("${tmdb.base.url}")
     private String baseUrl;
+
+    public TmdbService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     public MovieResponseDto getPopularMovies() {
         String url = buildUrl("/movie/popular");

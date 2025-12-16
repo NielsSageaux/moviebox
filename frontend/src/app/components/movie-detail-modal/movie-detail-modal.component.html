@@ -1,0 +1,45 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()" *ngIf="movie">
+    <button class="modal-close" (click)="onClose()" type="button">×</button>
+
+    <div class="modal-header">
+      <div class="modal-poster" *ngIf="movie.posterUrl">
+        <img [src]="movie.posterUrl" [alt]="movie.title" />
+      </div>
+      <div class="modal-info">
+        <h2>{{ movie.title }}</h2>
+        <p class="modal-meta" *ngIf="movie.releaseYear">{{ movie.releaseYear }}</p>
+        <p class="modal-synopsis" *ngIf="movie.synopsis">{{ movie.synopsis }}</p>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <div class="modal-rating">
+        <label>Noter ce film</label>
+        <app-heart-rating
+          [value]="toHearts(currentRating)"
+          (valueChange)="onRate($event)"
+        ></app-heart-rating>
+      </div>
+      <div class="modal-buttons">
+        <button
+          *ngIf="!isInWatchlist"
+          type="button"
+          (click)="onAddToWatchlist()"
+          class="btn-watchlist"
+        >
+          + Ajouter à la watchlist
+        </button>
+        <button
+          *ngIf="isInWatchlist"
+          type="button"
+          (click)="onRemove()"
+          class="btn-remove"
+        >
+          Retirer de la watchlist
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

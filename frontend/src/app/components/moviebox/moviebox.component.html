@@ -1,0 +1,155 @@
+<main class="moviebox">
+  <header class="moviebox__header">
+    <h1>MovieBox</h1>
+    <p>Ta mini-Letterboxd : watchlist & films notés, connectés au backend Spring.</p>
+
+    <nav class="moviebox__tabs">
+      <button
+        type="button"
+        [class.moviebox__tab--active]="activeTab === 'discover'"
+        (click)="setTab('discover')"
+      >
+        Découvrir
+      </button>
+      <button
+        type="button"
+        [class.moviebox__tab--active]="activeTab === 'profile'"
+        (click)="setTab('profile')"
+      >
+        Mon profil
+      </button>
+    </nav>
+  </header>
+
+  <!-- Découverte & recherche de films -->
+  <section class="moviebox__discover" *ngIf="activeTab === 'discover'">
+    <div class="card">
+      <h2>Découvrir des films</h2>
+      <p class="hint">
+        Parcours les films populaires ou recherche par titre (données TMDB via le backend).
+      </p>
+      <form class="form-inline" (submit)="$event.preventDefault()">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchQueryChange($event)"
+          name="searchQuery"
+          placeholder="Rechercher un film par titre..."
+        />
+        <button type="button" (click)="searchQuery = ''; loadPopularMovies()">Populaires</button>
+      </form>
+    </div>
+
+    <div class="movie-grid" [class.movie-grid--loading]="discoverLoading()">
+      <ng-container *ngIf="discoverMovies().length; else noDiscover">
+        <article
+          *ngFor="let movie of discoverMovies()"
+          class="movie-card"
+          [class.movie-card--in-watchlist]="isInWatchlist(movie.tmdbId)"
+          [class.movie-card--rated]="getHeartsForTmdb(movie.tmdbId) > 0"
+          (click)="openMovieDetail(movie)"
+        >
+          <div class="movie-card__badges">
+            <span *ngIf="isInWatchlist(movie.tmdbId)" class="badge badge-watchlist">Watchlist</span>
+            <span *ngIf="getHeartsForTmdb(movie.tmdbId) > 0" class="badge badge-rated">
+              <app-heart-rating
+                [value]="getHeartsForTmdb(movie.tmdbId)"
+                [readonly]="true"
+                [compact]="true"
+              ></app-heart-rating>
+            </span>
+          </div>
+          <div class="movie-card__poster">
+            <img
+              *ngIf="movie.posterUrl; else noPoster"
+              [src]="movie.posterUrl"
+              [alt]="movie.title"
+              loading="lazy"
+            />
+            <ng-template #noPoster>
+              <div class="movie-card__placeholder">Aucune affiche</div>
+            </ng-template>
+          </div>
+          <div class="movie-card__info">
+            <h3>{{ movie.title }}</h3>
+            <p class="movie-card__meta" *ngIf="movie.releaseYear">
+              {{ movie.releaseYear }}
+            </p>
+          </div>
+        </article>
+      </ng-container>
+      <ng-template #noDiscover>
+        <p class="movie-grid__empty">Aucun film à afficher pour le moment.</p>
+      </ng-template>
+    </div>
+  </section>
+
+
+  <section *ngIf="error()" class="moviebox__error">
+    {{ error() }}
+  </section>
+
+  <section
+    class="moviebox__lists"
+    [class.moviebox__lists--loading]="loading()"
+    *ngIf="activeTab === 'profile'"
+  >
+    <div class="card">
+      <h2>Watchlist</h2>
+      <p *ngIf="!watchlist().length">Aucun film pour le moment.</p>
+      <ul *ngIf="watchlist().length" class="movie-list">
+        <li *ngFor="let item of watchlist()" class="movie-list__item">
+          <div class="movie-list__info">
+            <div class="movie-title">
+              {{ item.movie.title }}
+              <span *ngIf="item.movie.releaseYear">({{ item.movie.releaseYear }})</span>
+            </div>
+            <div class="movie-meta">
+              TMDB #{{ item.movie.tmdbId }}
+              <span *ngIf="item.lastModifiedDate">
+                • maj {{ item.lastModifiedDate | date: 'short' }}
+              </span>
+            </div>
+          </div>
+          <button type="button" (click)="removeFromList(item.movie.tmdbId)">Retirer</button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Films notés</h2>
+      <p *ngIf="!rated().length">Aucun film noté pour le moment.</p>
+      <ul *ngIf="rated().length" class="movie-list">
+        <li *ngFor="let item of rated()" class="movie-list__item">
+          <div class="movie-list__info">
+            <div class="movie-title">
+              {{ item.movie.title }}
+              <span *ngIf="item.movie.releaseYear">({{ item.movie.releaseYear }})</span>
+            </div>
+            <div class="movie-meta">
+              <app-heart-rating [value]="toHearts(item.rating)" [readonly]="true"></app-heart-rating>
+              <span *ngIf="item.lastModifiedDate">
+                • maj {{ item.lastModifiedDate | date: 'short' }}
+              </span>
+            </div>
+          </div>
+          <button type="button" (click)="removeFromList(item.movie.tmdbId)">Retirer</button>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Modal de détails du film -->
+  <app-movie-detail-modal
+    *ngIf="showModal() && selectedMovie"
+    [movie]="selectedMovie"
+    [isInWatchlist]="isInWatchlist(selectedMovie.tmdbId)"
+    [currentRating]="getCurrentRatingForMovie(selectedMovie.tmdbId)"
+    (close)="closeModal()"
+    (addToWatchlist)="onModalAddToWatchlist($event)"
+    (rateMovie)="onModalRateMovie($event)"
+    (removeFromList)="onModalRemove($event)"
+  ></app-movie-detail-modal>
+</main>
+
+

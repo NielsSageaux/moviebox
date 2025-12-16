@@ -1,0 +1,14 @@
+<div class="heart-rating" [class.heart-rating--readonly]="readonly" [class.heart-rating--compact]="compact">
+  <button
+    *ngFor="let heart of hearts"
+    type="button"
+    class="heart-rating__heart"
+    [class.heart-rating__heart--full]="value >= heart"
+    [class.heart-rating__heart--half]="value >= heart - 0.5 && value < heart"
+    (click)="onClick(heart)"
+  >
+    <span class="heart">&#10084;</span>
+  </button>
+</div>
+
+

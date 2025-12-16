@@ -4,7 +4,6 @@ import com.example.moviebox.dto.MovieDto;
 import com.example.moviebox.dto.MovieResponseDto;
 import com.example.moviebox.model.Movie;
 import com.example.moviebox.repository.MovieRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,11 +11,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class MovieService {
 
     private final MovieRepository movieRepository;
     private final TmdbService tmdbService;
+
+    public MovieService(MovieRepository movieRepository, TmdbService tmdbService) {
+        this.movieRepository = movieRepository;
+        this.tmdbService = tmdbService;
+    }
 
     // Cherche sur TMDB mais NE SAUVEGARDE PAS automatiquement
     public MovieResponseDto searchMovies(String query) {
@@ -69,16 +72,14 @@ public class MovieService {
 
     // Conversion DTO → Entity
     private Movie saveMovieFromDto(MovieDto dto) {
-        Movie movie = Movie.builder()
-                .tmdbId(dto.getId())
-                .title(dto.getTitle())
-                .director(null)  // On remplira plus tard avec les crédits
-                .releaseYear(extractYear(dto.getReleaseDate()))
-                .synopsis(dto.getOverview())
-                .posterUrl(dto.getPosterPath() != null ?
-                        "https://image.tmdb.org/t/p/w500" + dto.getPosterPath() : null)
-                .build();
-
+        Movie movie = new Movie();
+        movie.setTmdbId(dto.getId());
+        movie.setTitle(dto.getTitle());
+        movie.setDirector(null);  // On remplira plus tard avec les crédits
+        movie.setReleaseYear(extractYear(dto.getReleaseDate()));
+        movie.setSynopsis(dto.getOverview());
+        movie.setPosterUrl(dto.getPosterPath() != null ?
+                "https://image.tmdb.org/t/p/w500" + dto.getPosterPath() : null);
         return movieRepository.save(movie);
     }
 

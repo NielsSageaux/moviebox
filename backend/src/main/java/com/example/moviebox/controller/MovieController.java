@@ -5,14 +5,14 @@ import com.example.moviebox.dto.MovieResponseDto;
 import com.example.moviebox.model.Movie;
 import com.example.moviebox.service.MovieService;
 import com.example.moviebox.service.TmdbService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/movies")
-@RequiredArgsConstructor
+// Autorise toutes les origines en développement pour éviter les erreurs CORS
+@CrossOrigin
 public class MovieController {
 
     private final TmdbService tmdbService;
@@ -57,5 +57,10 @@ public class MovieController {
     @GetMapping("/saved/search")
     public List<Movie> searchSavedMovies(@RequestParam String title) {
         return movieService.searchSavedMovies(title);
+    }
+
+    public MovieController(TmdbService tmdbService, MovieService movieService) {
+        this.tmdbService = tmdbService;
+        this.movieService = movieService;
     }
 }

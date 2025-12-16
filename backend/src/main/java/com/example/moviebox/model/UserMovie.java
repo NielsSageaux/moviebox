@@ -2,18 +2,11 @@ package com.example.moviebox.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
-@Setter
-@Getter
 @Entity
-@Builder
 @Table(name = "user_movies")
-@NoArgsConstructor
-@AllArgsConstructor
 public class UserMovie {
 
     @Id
@@ -40,6 +33,9 @@ public class UserMovie {
     @Column(name = "last_modified_date")
     private LocalDateTime lastModifiedDate;
 
+    public UserMovie() {
+    }
+
     public UserMovie(User user, Movie movie, Double rating) {
         this.user = user;
         this.movie = movie;
@@ -50,5 +46,53 @@ public class UserMovie {
             this.rating = rating;
             this.status = UserMovieStatus.RATED;
         }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Movie getMovie() {
+        return movie;
+    }
+
+    public void setMovie(Movie movie) {
+        this.movie = movie;
+    }
+
+    public UserMovieStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserMovieStatus status) {
+        this.status = status;
+    }
+
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
+
+    public LocalDateTime getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
     }
 }

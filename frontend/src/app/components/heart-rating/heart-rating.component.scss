@@ -1,0 +1,53 @@
+.heart-rating {
+  display: inline-flex;
+  gap: 0.1rem;
+}
+
+.heart-rating__heart {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  position: relative;
+  color: #4b5563;
+  transition: transform 0.1s ease, filter 0.1s ease;
+}
+
+.heart-rating__heart .heart {
+  display: block;
+}
+
+.heart-rating__heart--full {
+  color: #f97373;
+}
+
+.heart-rating__heart--half::before {
+  content: '\2764';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50%;
+  overflow: hidden;
+  color: #f97373;
+}
+
+.heart-rating__heart:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+.heart-rating--readonly .heart-rating__heart {
+  cursor: default;
+}
+
+.heart-rating--compact {
+  gap: 0.05rem;
+}
+
+.heart-rating--compact .heart-rating__heart {
+  font-size: 0.75rem;
+}
+
+

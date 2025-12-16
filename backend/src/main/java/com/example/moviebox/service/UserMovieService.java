@@ -4,7 +4,6 @@ import com.example.moviebox.model.*;
 import com.example.moviebox.repository.MovieRepository;
 import com.example.moviebox.repository.UserMovieRepository;
 import com.example.moviebox.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,13 +12,22 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class UserMovieService {
 
     private final UserMovieRepository userMovieRepository;
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
     private final MovieService movieService;
+
+    public UserMovieService(UserMovieRepository userMovieRepository,
+                            MovieRepository movieRepository,
+                            UserRepository userRepository,
+                            MovieService movieService) {
+        this.userMovieRepository = userMovieRepository;
+        this.movieRepository = movieRepository;
+        this.userRepository = userRepository;
+        this.movieService = movieService;
+    }
 
     private User getDefaultUser() {
         return userRepository.findById(1L)
@@ -38,7 +46,8 @@ public class UserMovieService {
             UserMovie userMovie = existing.get();
             userMovie.setStatus(UserMovieStatus.TO_WATCH);
             userMovie.setRating(null);
-            userMovie.setLastModifiedDate(null);
+            // On remet la date de modification à maintenant pour garder un tri cohérent
+            userMovie.setLastModifiedDate(LocalDateTime.now());
             return userMovieRepository.save(userMovie);
         }
 
